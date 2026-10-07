@@ -1,0 +1,2 @@
+id,name,read,pattern,sequence,feature_type
+Anti_EGFR,Anti_EGFR_barcoded_ab_totalseq_C0132_anti_human_EGFR_antibody,R2,5PNNNNNNNNNN(BC),GCTTAACATTGGCAC,Antibody Capture
