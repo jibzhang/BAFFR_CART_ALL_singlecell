@@ -44,9 +44,19 @@ Rscript/BAFFR_post_integration.R  downstream analysis on the integrated object
 | `submit_sample_BAFFR.smk` | Per-sample job dispatcher: generates one sbatch script per sample under `{dir_out}/smk_code/{sample}.sh`, each invoking `BAFFR_singlecell.smk` for that sample. |
 | `Rscript/BAFFR_Data_Integration.R` | Merges/integrates per-sample Seurat objects across the cohort (TCR annotation via scRepertoire, RPCA/harmony integration), with QC boxplots. |
 | `Rscript/BAFFR_post_integration.R` | Downstream analysis on the integrated object: cluster markers, pseudobulk DESeq2 comparisons, signature score dot plots. |
+| `Rscript/F_sc.R` | General single-cell helper library: Seurat object creation, QC metrics and cutoffs, DoubletFinder wrapper, SCTransform clustering, SingleR annotation (single/double reference), marker-density cutoff helpers, and plotting/TSV I/O utilities. |
+| `Rscript/CART_singlecell_functions.R` | CAR-T analysis helper library: T-cell signature gene sets, ProjecTILs reference mapping, integration and resolution selection, CAR-positive and group/sample proportion plots, TCR clonotype (CDR3, top/shared clone) comparisons, pseudobulk DE, pseudotime analysis, signature scoring, heatmaps, and GSEA. |
 
-Not included here: `Rscript/F_sc.R` and `Rscript/CART_singlecell_functions.R`, shared helper
-function libraries sourced by the scripts above but not specific to this pipeline.
+## Helper libraries
+
+`F_sc.R` and `CART_singlecell_functions.R` define functions only and are loaded with `source()`:
+
+- `F_sc.R` is sourced by `CreatSeuratObj_multimodal.R`, `SeuratQC.R`, and `BAFFR_Data_Integration.R`.
+- `CART_singlecell_functions.R` is sourced by `BAFFR_Data_Integration.R`.
+
+The `source()` calls and some reference files inside these libraries (for example, the housekeeping
+gene list in `F_sc.R` and the CD8 ProjecTILs reference in `CART_singlecell_functions.R`) use absolute
+cluster paths. Update these paths before running the scripts in a different environment.
 
 ## Running
 
