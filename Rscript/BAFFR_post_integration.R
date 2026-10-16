@@ -11,8 +11,8 @@ workdir="/net/isi-dcnl/ifs/user_data/lkwak/Data/Jibin/project/BAFFR_singlecell/"
 setwd(paste0(workdir,"T_cell_integration"))
 harmony_inte <- readRDS("CART harmony integrated CART cells planB.rds")
 Idents(harmony_inte) <- "orig.ident"
-product <- subset(harmony_inte, idents = c("UPN787-P","UPN775-P","UPN685-P","UPN749-P","UPN746-P"))
-blood <- subset(harmony_inte, idents = c("UPN787-B","UPN775-B","UPN685-B","UPN749-B","UPN746-B"))
+product <- subset(harmony_inte, idents = c("Patient5-P","Patient4-P","Patient1-P","Patient3-P","Patient2-P"))
+blood <- subset(harmony_inte, idents = c("Patient5-B","Patient4-B","Patient1-B","Patient3-B","Patient2-B"))
 
 scores=c("CTL_score","Tem_score","Temra_score","Tex_score","Prolif_score","Tcm_score","Tn_score","Tpex_score")
 meta_scores=c("Glyco_score","OXPHOS_score")
@@ -27,11 +27,11 @@ make_dotplot <- function(seu, desired_order, scores, index, group, width, height
                                                                            legend.title = element_text(face = "bold", color = "black", size = 14)) 
   ggsave(paste0("dot plot of ", index, " index scores for pooled ", group,".svg"), dpi=300,width=width, height=height,bg="white")}
 
-desired_order <- c("UPN685-P", "UPN775-P", "UPN787-P", "UPN749-P", "UPN746-P")
+desired_order <- c("Patient1-P", "Patient4-P", "Patient5-P", "Patient3-P", "Patient2-P")
 make_dotplot(product, desired_order, meta_scores, "metabolism", "product", 4,4)
 make_dotplot(product, desired_order, cytokine_scores, "cytokine", "product", 4,4)
 make_dotplot(product, desired_order, scores, "cell type", "product", 6,4)
-desired_order <- c("UPN685-B", "UPN775-B", "UPN787-B", "UPN749-B", "UPN746-B")
+desired_order <- c("Patient1-B", "Patient4-B", "Patient5-B", "Patient3-B", "Patient2-B")
 make_dotplot(blood, desired_order,meta_scores, "metabolism", "blood", 5,5)
 make_dotplot(blood, desired_order,cytokine_scores, "cytokine", "blood", 5,5)
 make_dotplot(blood, desired_order,scores, "cell type", "blood", 6,5)
@@ -125,7 +125,7 @@ gene_group <- stack(signatures)
 colnames(gene_group) <- c("gene", "signature")
 annotation_col <- gene_group %>% column_to_rownames(var="gene")
 ann_colors <- list(set = c(CTL = "#D73027",Proliferation = "#984EA3", Tpex = "#1A9850",Tex = "#4575B4" ))
-count <- read.csv("CART vsd normalized counts of product  cells plan B.csv",sep=",",header=T) %>% select(UPN749.P,UPN746.P,UPN787.P,UPN775.P,UPN685.P)
+count <- read.csv("CART vsd normalized counts of product  cells plan B.csv",sep=",",header=T) %>% select(Patient3.P,Patient2.P,Patient5.P,Patient4.P,Patient1.P)
 colnames(count) <- sub("..$", "",colnames(count))
 sigcount <- scale(t(count[gene_group$gene,]))
 cols <- colorRampPalette(colors = brewer.pal(9,"RdBu") )
@@ -421,8 +421,8 @@ for (i in c(1:length(DEG_lis))) {
   DEGs_count[[i]] <- read.table(count_lis[i],sep=",",header = T,row.names = 1)
   DEGs_count[[i]] <- DEGs_count[[i]][genes,]
   counts <- t(scale(t(DEGs_count[[i]])))
-  colnames(counts) <- c("UPN685","PD","UPN775","UPN787")
-  counts <- as.data.frame(counts) %>% mutate(CR=(UPN685+UPN775+UPN787)/3) %>% select(CR, PD)
+  colnames(counts) <- c("Patient1","PD","Patient4","Patient5")
+  counts <- as.data.frame(counts) %>% mutate(CR=(Patient1+Patient4+Patient5)/3) %>% select(CR, PD)
   cols <- colorRampPalette(colors = brewer.pal(9,"RdBu") )
   svglite(paste(names[i],"DEGs heatmap.svg"), width = 8, height = 20)
   #annotation_col <- data.frame(row.names=colnames(DEGs_count[[i]]),group=c("CR","PD","CR","CR"))
@@ -617,8 +617,8 @@ plot_clonaloverlay <- function(seu,group, name, reduction) {
 }
 clonal_plots <- function(integrated, name, reduction, combined.CR) {
   Idents(integrated) <- "orig.ident"
-  product <- subset(integrated, idents = c("UPN787-P","UPN775-P","UPN749-P","UPN685-P"))
-  blood <- subset(integrated, idents = c("UPN787-B","UPN775-B","UPN749-B","UPN685-B"))
+  product <- subset(integrated, idents = c("Patient5-P","Patient4-P","Patient3-P","Patient1-P"))
+  blood <- subset(integrated, idents = c("Patient5-B","Patient4-B","Patient3-B","Patient1-B"))
   Idents(product) <- "annotation"
   Idents(blood) <- "annotation"
   plot_clonaloverlay(product,"product",name,reduction)
@@ -643,11 +643,11 @@ clonal_plots <- function(integrated, name, reduction, combined.CR) {
   ggsave(paste(name, reduction,"percentKmer TRB all samples.png"), dpi=300, width=10, height=6)
   percentKmer(combined.CR.filtered, cloneCall = "aa", chain = "TRA", motif.length = 5, top.motifs = 25)
   ggsave(paste(name, reduction,"percentKmer TRA all samples.png"), dpi=300, width=10, height=6)
-  compare_top_clone(combined.CR.filtered, "UPN685",10,"CART")
-  compare_top_clone(combined.CR.filtered, "UPN775",10,"CART")
-  compare_top_clone(combined.CR.filtered, "UPN749",10,"CART")
-  compare_top_clone(combined.CR.filtered, "UPN787",10,"CART")
-  compare_top_clone(combined.CR.filtered, "UPN746",10,"CART")
+  compare_top_clone(combined.CR.filtered, "Patient1",10,"CART")
+  compare_top_clone(combined.CR.filtered, "Patient4",10,"CART")
+  compare_top_clone(combined.CR.filtered, "Patient3",10,"CART")
+  compare_top_clone(combined.CR.filtered, "Patient5",10,"CART")
+  compare_top_clone(combined.CR.filtered, "Patient2",10,"CART")
   integrated <- combineExpression(combined.CR.filtered, integrated, cloneCall = "aa", group.by = "sample",  proportion = FALSE,  cloneSize=c(Single=1, Small=5, Medium=20, Large=100, Hyperexpanded=500))
   DimPlot(integrated, reduction = "umap",group.by = "cloneSize") + scale_color_manual(values=rev(colorblind_vector[c(1,3,4,5,7)]))
   ggsave(paste(name, reduction, "integrated all samples UMAP CR plan B.png"), dpi=300, width=8, height=5)
