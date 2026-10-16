@@ -61,7 +61,7 @@ clonalLength(combined.CR, cloneCall="aa", chain = "both", scale=F, group.by = "G
 ggsave("clonal CDR3 aa length distribution in each group.png", dpi=300, width=5, height=4)
 clonalHomeostasis(combined.CR, group.by = "Group",cloneCall = "aa")
 ggsave("clonal homeostasis based on aa in each group.png", dpi=300, width=5, height=4)
-clonalDiversity(combined.CR, cloneCall = "aa", n.boots = 20, order.by = c("UPN685-P","UPN749-P", "UPN775-P","UPN787-P","UPN746-P", "UPN685-B","UPN749-B","UPN775-B","UPN787-B","UPN746-B"))
+clonalDiversity(combined.CR, cloneCall = "aa", n.boots = 20, order.by = c("Patient1-P","Patient3-P", "Patient4-P","Patient5-P","Patient2-P", "Patient1-B","Patient3-B","Patient4-B","Patient5-B","Patient2-B"))
 ggsave("clonal diversity gene+nt in each sample.png", dpi=300, width=8, height=4)
 clonalRarefaction(combined.CR,plot.type = 3,cloneCall="aa",group.by = "Group",hill.numbers = 1,n.boots = 2)
 ggsave("clonal Rarefaction gene+nt in each group.png", dpi=300, width=5, height=4)
@@ -80,11 +80,11 @@ make_clonal_compare <- function(cr_list, patient) {
   clonalCompare(cr_list, clones = top10_tbl$CTaa, order.by = c(sampP, sampB), cloneCall = "aa",graph = "alluvial")
   ggsave(paste("Top10 CDR3 aa clonal comparison between",patient,"Product and Blood.pdf"), dpi=300, width=6, height=6)
 }
-make_clonal_compare(combined.CR,"UPN749")
-make_clonal_compare(combined.CR,"UPN685")
-make_clonal_compare(combined.CR,"UPN775")
-make_clonal_compare(combined.CR,"UPN787")
-make_clonal_compare(combined.CR,"UPN746")
+make_clonal_compare(combined.CR,"Patient3")
+make_clonal_compare(combined.CR,"Patient1")
+make_clonal_compare(combined.CR,"Patient4")
+make_clonal_compare(combined.CR,"Patient5")
+make_clonal_compare(combined.CR,"Patient2")
 
 seurat_list2 <- lapply(samples, function(s) {
   seurat_obj <- readRDS(paste0(workdir, s, "/Seurat/plotQC/", s, ".SeuratObj.QC.rds"))
@@ -208,7 +208,7 @@ dens_df <- df_adt %>% group_by(Identity) %>%
   })
 
 valley_or_shoulder <- valley_or_shoulder %>% mutate(
-  Identity = factor(Identity, levels = c("UPN685-P","UPN749-P", "UPN775-P","UPN787-P", "UPN746-P", "UPN685-B","UPN749-B","UPN775-B","UPN787-B","UPN746-B")),
+  Identity = factor(Identity, levels = c("Patient1-P","Patient3-P", "Patient4-P","Patient5-P", "Patient2-P", "Patient1-B","Patient3-B","Patient4-B","Patient5-B","Patient2-B")),
   y_num = as.numeric(Identity),
   y0 = y_num - 0.45,   # segment half-height; tweak as you like
   y1 = y_num + 0.45)
@@ -287,7 +287,7 @@ find_overlap <- function(sample) {
     cex = 2
   ) 
 }
-samples <- c("UPN787-B","UPN787-P","UPN775-B","UPN775-P","UPN749-B","UPN749-P","UPN685-B","UPN685-P","UPN746-B","UPN746-P")
+samples <- c("Patient5-B","Patient5-P","Patient4-B","Patient4-P","Patient3-B","Patient3-P","Patient1-B","Patient1-P","Patient2-B","Patient2-P")
 for (i in 1:length(samples)) {find_overlap(samples[i])}
 #match cell order and add to metadata
 all_info <- all_info[match(rownames(Tcells@meta.data), all_info$Cell), ]
@@ -296,7 +296,7 @@ Tcells@meta.data$CAR_positive <- all_info$CAR_pos
 Tcells@meta.data$Cell_type <- all_info$Cell_type
 Tcells$TCR_positive <- !is.na(Tcells$cloneSize)
 Tcells$patient <- sub("-.*", "", Tcells$orig.ident)
-Tcells$disease <- ifelse(Idents(Tcells) %in% c("UPN749-P","UPN749-B","UPN746-B","UPN746-P"), "PD", "CR")
+Tcells$disease <- ifelse(Idents(Tcells) %in% c("Patient3-P","Patient3-B","Patient2-B","Patient2-P"), "PD", "CR")
 Tcells$subgroup <- paste(Tcells$group, Tcells$disease, sep = "_")
 
 options(future.globals.maxSize = 100 * 1024^3)
@@ -465,10 +465,10 @@ data_integration <- function(integrated, name, method, reduction) {
   
   #plot signature scores
   Idents(integrated) <- "orig.ident"
-  product <- subset(integrated, idents = c("UPN787-P","UPN775-P","UPN685-P","UPN749-P","UPN746-P"))
-  blood <- subset(integrated, idents = c("UPN787-B","UPN775-B","UPN685-B","UPN749-B","UPN746-B"))
-  product$orig.ident <- factor(product$orig.ident,levels=c("UPN787-P","UPN775-P","UPN685-P","UPN749-P","UPN746-P"))
-  blood$orig.ident <- factor(blood$orig.ident,levels=c("UPN787-B","UPN775-B","UPN685-B","UPN749-B","UPN746-B"))
+  product <- subset(integrated, idents = c("Patient5-P","Patient4-P","Patient1-P","Patient3-P","Patient2-P"))
+  blood <- subset(integrated, idents = c("Patient5-B","Patient4-B","Patient1-B","Patient3-B","Patient2-B"))
+  product$orig.ident <- factor(product$orig.ident,levels=c("Patient5-P","Patient4-P","Patient1-P","Patient3-P","Patient2-P"))
+  blood$orig.ident <- factor(blood$orig.ident,levels=c("Patient5-B","Patient4-B","Patient1-B","Patient3-B","Patient2-B"))
   DotPlot(product, features = scores,group = "orig.ident") + RotatedAxis() 
   ggsave("product dot plot of index scores.png", dpi=300,width=8, height=4,bg="white")
   VlnPlot(product, scores,group.by = "disease",pt.size = 0)
@@ -535,11 +535,11 @@ Tcell_inte <- data_integration(integrated,"Tcells", HarmonyIntegration,"harmony"
 
 cells_keep <- colnames(integrated) 
 combined.CR.filtered <- lapply(combined.CR, function(df) {df[df$barcode %in% cells_keep, ]})
-compare_top_clone(combined.CR.filtered, "UPN685",10,"Tcell")
-compare_top_clone(combined.CR.filtered, "UPN775",10,"Tcell")
-compare_top_clone(combined.CR.filtered, "UPN749",10,"Tcell")
-compare_top_clone(combined.CR.filtered, "UPN787",10,"Tcell")
-compare_top_clone(combined.CR.filtered, "UPN746",10,"Tcell")
+compare_top_clone(combined.CR.filtered, "Patient1",10,"Tcell")
+compare_top_clone(combined.CR.filtered, "Patient4",10,"Tcell")
+compare_top_clone(combined.CR.filtered, "Patient3",10,"Tcell")
+compare_top_clone(combined.CR.filtered, "Patient5",10,"Tcell")
+compare_top_clone(combined.CR.filtered, "Patient2",10,"Tcell")
 clonalProportion(combined.CR.filtered, cloneCall = "aa") 
 ggsave(paste("clonal proportion Product and Blood Tcell.png"), dpi=300, width=10, height=6)
 clonalHomeostasis(combined.CR.filtered, cloneCall = "aa")
@@ -557,7 +557,7 @@ compare_top_clone <- function(cr_list,patient, top_number, name) {
 }
 
 integrated <- readRDS("Tcells harmony integrated CART cells planB.rds")
-product <- subset(integrated, idents = c("UPN787-P","UPN775-P","UPN685-P","UPN749-P","UPN746-P"))
+product <- subset(integrated, idents = c("Patient5-P","Patient4-P","Patient1-P","Patient3-P","Patient2-P"))
 make_dimplot_with_pecent <- function(obj, name, split_variable, variable, width, height, ncols) {
   md <- obj@meta.data %>% rownames_to_column("cell") %>% mutate(split = as.character(.data[[split_variable]]),cluster = as.factor(.data[[variable]])) 
   meta_pct <-  md %>% group_by(split, cluster) %>% summarise(n = n(), .groups = "drop") %>% group_by(split) %>% mutate(percent = 100 * n / sum(n))
@@ -588,11 +588,11 @@ cdr3_stats <- map_df(names(combined.CR.CART),
 write.table(cdr3_stats,"number of clones in each sample CART.csv",sep=",",row.names = F,quote=F)
 CART_inte <- data_integration(CART,"CART", HarmonyIntegration,"harmony")
 
-compare_top_clone(combined.CR.CART, "UPN685",10,"CART")
-compare_top_clone(combined.CR.CART, "UPN775",10,"CART")
-compare_top_clone(combined.CR.CART, "UPN749",10,"CART")
-compare_top_clone(combined.CR.CART, "UPN787",10,"CART")
-compare_top_clone(combined.CR.CART, "UPN746",10,"CART")
+compare_top_clone(combined.CR.CART, "Patient1",10,"CART")
+compare_top_clone(combined.CR.CART, "Patient4",10,"CART")
+compare_top_clone(combined.CR.CART, "Patient3",10,"CART")
+compare_top_clone(combined.CR.CART, "Patient5",10,"CART")
+compare_top_clone(combined.CR.CART, "Patient2",10,"CART")
 
 StartracDiversity(harmony_inte, type = "group", group.by = "patient")
 ggsave("StartracDiversity in each Harmony integrated cluster.png", dpi=300,width=12, height=9)
